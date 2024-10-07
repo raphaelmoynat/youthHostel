@@ -15,11 +15,11 @@ class Room
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups("roomsjson")]
+    #[Groups(["roomsjson", "bedjson"])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups("roomsjson")]
+    #[Groups(["roomsjson", "bedjson"])]
     private ?string $name = null;
 
     /**
@@ -29,9 +29,20 @@ class Room
     #[Groups("roomsjson")]
     private Collection $beds;
 
+    /**
+     * @var Collection<int, Booking>
+     */
+    #[ORM\ManyToMany(targetEntity: Booking::class, mappedBy: 'rooms')]
+    private Collection $bookings;
+
+    /**
+     * @var Collection<int, Booking>
+     */
+
     public function __construct()
     {
         $this->beds = new ArrayCollection();
+        $this->bookings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -80,4 +91,32 @@ class Room
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Booking>
+     */
+    public function getBookings(): Collection
+    {
+        return $this->bookings;
+    }
+
+    public function addBooking(Booking $booking): static
+    {
+        if (!$this->bookings->contains($booking)) {
+            $this->bookings->add($booking);
+            $booking->addRoom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBooking(Booking $booking): static
+    {
+        if ($this->bookings->removeElement($booking)) {
+            $booking->removeRoom($this);
+        }
+
+        return $this;
+    }
+
 }

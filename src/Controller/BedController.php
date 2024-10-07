@@ -27,13 +27,24 @@ class BedController extends AbstractController
     }
 
     #[Route('/api/create/bed', name: 'create_bed', methods: ['POST'])]
-    public function create(Request $request, BedRepository $bedRepository, SerializerInterface $serializer, EntityManagerInterface $manager, Security $security): JsonResponse
+    public function create(Request $request, BedRepository $bedRepository, RoomRepository $roomRepository, SerializerInterface $serializer, EntityManagerInterface $manager, Security $security): JsonResponse
     {
+        $data = json_decode($request->getContent(), true);
+
         $bed = $serializer->deserialize($request->getContent(), Bed::class, 'json');
         $author = $security->getUser();
         if (!$author) {
             throw new AccessDeniedException('You must be logged in to create a bed.');
         }
+
+        $roomId = $data['room'];
+        $room = $roomRepository->find($roomId);
+
+        if (!$room) {
+            return $this->json(['error' => 'Room not found'], 404);
+        }
+
+        $bed->setRoom($room);
 
 
         $manager->persist($bed);

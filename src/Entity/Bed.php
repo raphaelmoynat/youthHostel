@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\BedRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
@@ -12,15 +14,24 @@ class Bed
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups("roomsjson")]
+    #[Groups(["roomsjson", "bedjson"])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'beds', cascade: ['persist', 'remove'])]
+    #[Groups(["bedjson"])]
     private ?Room $room = null;
 
-    #[ORM\Column]
-    #[Groups("roomsjson")]
-    private ?int $number = null;
+
+    /**
+     * @var Collection<int, Booking>
+     */
+    #[ORM\ManyToMany(targetEntity: Booking::class, mappedBy: 'beds')]
+    private Collection $bookings;
+
+    public function __construct()
+    {
+        $this->bookings = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -39,14 +50,30 @@ class Bed
         return $this;
     }
 
-    public function getNumber(): ?int
+
+    /**
+     * @return Collection<int, Booking>
+     */
+    public function getBookings(): Collection
     {
-        return $this->number;
+        return $this->bookings;
     }
 
-    public function setNumber(int $number): static
+    public function addBooking(Booking $booking): static
     {
-        $this->number = $number;
+        if (!$this->bookings->contains($booking)) {
+            $this->bookings->add($booking);
+            $booking->addBed($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBooking(Booking $booking): static
+    {
+        if ($this->bookings->removeElement($booking)) {
+            $booking->removeBed($this);
+        }
 
         return $this;
     }
