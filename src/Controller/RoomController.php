@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Bed;
 use App\Entity\Room;
 use App\Repository\RoomRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -32,12 +33,20 @@ class RoomController extends AbstractController
             throw new AccessDeniedException('You must be logged in to create a room.');
         }
 
+        $totalBeds = $room->getTotalBeds();
+        $room->setAvailableBeds($totalBeds);
+
+        for ($i = 0; $i < $totalBeds; $i++) {
+            $bed = new Bed();
+            $bed->setRoom($room);
+            $bed->setAvailable(true);
+            $manager->persist($bed);
+        }
+
         $manager->persist($room);
         $manager->flush();
 
-        return $this->json($room, 200, [], ['groups' => ['roomsjon']]);
-
-
+        return $this->json(['message' => 'Room created successfully'], 200);
     }
 
     #[Route('/api/delete/room/{id}', name: 'app_room_delete', methods: ['DELETE'])]
@@ -46,8 +55,6 @@ class RoomController extends AbstractController
         if (!$room) {
             return $this->json(['error' => 'Room not found'], 404);
         }
-
-
 
         $manager->remove($room);
         $manager->flush();

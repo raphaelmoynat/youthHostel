@@ -14,7 +14,7 @@ class Bed
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["roomsjson", "bedjson"])]
+    #[Groups(["roomsjson", "bedjson", "bookings"])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'beds', cascade: ['persist', 'remove'])]
@@ -27,6 +27,10 @@ class Bed
      */
     #[ORM\ManyToMany(targetEntity: Booking::class, mappedBy: 'beds')]
     private Collection $bookings;
+
+    #[ORM\Column]
+    #[Groups(["roomsjson", "bedjson", "bookings"])]
+    private ?bool $isAvailable = null;
 
     public function __construct()
     {
@@ -75,6 +79,30 @@ class Bed
             $booking->removeBed($this);
         }
 
+        return $this;
+    }
+
+    public function isAvailable(): ?bool
+    {
+        return $this->isAvailable;
+    }
+
+    public function setAvailable(bool $isAvailable): static
+    {
+        $this->isAvailable = $isAvailable;
+
+        return $this;
+    }
+
+    public function occupy(): self
+    {
+        $this->isAvailable = false;
+        return $this;
+    }
+
+    public function vacate(): self
+    {
+        $this->isAvailable = true;
         return $this;
     }
 }

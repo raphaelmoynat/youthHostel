@@ -15,7 +15,7 @@ class Room
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["roomsjson", "bedjson"])]
+    #[Groups(["roomsjson", "bedjson", "bookings"])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -34,6 +34,12 @@ class Room
      */
     #[ORM\ManyToMany(targetEntity: Booking::class, mappedBy: 'rooms')]
     private Collection $bookings;
+
+    #[ORM\Column]
+    private ?int $totalBeds = null;
+
+    #[ORM\Column]
+    private ?int $availableBeds = null;
 
     /**
      * @var Collection<int, Booking>
@@ -116,6 +122,46 @@ class Room
             $booking->removeRoom($this);
         }
 
+        return $this;
+    }
+
+    public function getTotalBeds(): ?int
+    {
+        return $this->totalBeds;
+    }
+
+    public function setTotalBeds(int $totalBeds): static
+    {
+        $this->totalBeds = $totalBeds;
+
+        return $this;
+    }
+
+    public function getAvailableBeds(): ?int
+    {
+        return $this->availableBeds;
+    }
+
+    public function setAvailableBeds(int $availableBeds): static
+    {
+        $this->availableBeds = $availableBeds;
+
+        return $this;
+    }
+
+    public function deleteAvailableBeds(): self
+    {
+        if ($this->availableBeds > 0) {
+            $this->availableBeds--;
+        }
+        return $this;
+    }
+
+    public function addAvailableBeds(): self
+    {
+        if ($this->availableBeds < $this->totalBeds) {
+            $this->availableBeds++;
+        }
         return $this;
     }
 

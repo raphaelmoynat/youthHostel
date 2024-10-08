@@ -42,6 +42,5 @@ class RegistrationController extends AbstractController
         return $this->json($user, Response::HTTP_CREATED, [], ['groups' => ['userjson']]);
 
 
-
     }
 }

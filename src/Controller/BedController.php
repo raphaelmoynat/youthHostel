@@ -45,6 +45,7 @@ class BedController extends AbstractController
         }
 
         $bed->setRoom($room);
+        $bed->setAvailable(true);
 
 
         $manager->persist($bed);
