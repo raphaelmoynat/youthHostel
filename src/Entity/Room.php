@@ -165,4 +165,17 @@ class Room
         return $this;
     }
 
+    public function getAvailableBedsDuringPeriod(\DateTime $startDate, \DateTime $endDate): int
+    {
+        $availableBedsCount = 0;
+
+        foreach ($this->beds as $bed) {
+            if ($bed->isAvailableDuringPeriod($startDate, $endDate)) {
+                $availableBedsCount++;
+            }
+        }
+
+        return $availableBedsCount;
+    }
+
 }

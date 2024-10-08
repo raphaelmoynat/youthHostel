@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\BedReservationPeriod;
 use App\Entity\Booking;
 use App\Entity\Room;
 use App\Repository\BedRepository;
@@ -33,6 +34,8 @@ class BookingController extends AbstractController
     public function create(Request $request,  BedRepository $bedRepository, RoomRepository $roomRepository, SerializerInterface $serializer, EntityManagerInterface $manager,): JsonResponse
     {
             $data = json_decode($request->getContent(), true);
+            $startDate = new \DateTime($data['startDate']);
+            $endDate = new \DateTime($data['endDate']);
             $booking = new Booking();
             $booking->setStartDate(new \DateTime($data['startDate']));
             $booking->setEndDate(new \DateTime($data['endDate']));
@@ -50,25 +53,35 @@ class BookingController extends AbstractController
                     return $this->json(['error' => "Room not found"], 404);
                 }
 
-                if ($room->getAvailableBeds() <= 0) {
-                    return $this->json(['error' => "Room has no available beds"], 400);
-                }
+            $availableBedsDuringPeriod = $room->getAvailableBedsDuringPeriod($startDate, $endDate);
+
+            if ($availableBedsDuringPeriod < count($roomData['beds'])) {
+                return $this->json(['error' => "Not enough beds available in the room for the selected period"], 400);
+            }
 
             $booking->addRoom($room);
 
                 foreach ($roomData['beds'] as $bedData) {
                     $bed = $bedRepository->find($bedData['id']);
 
+
+
+                    if (!$bed->isAvailableDuringPeriod($startDate, $endDate)) {
+                        return $this->json(['error' => "Bed {$bed->getId()} is not available during the selected period"], 400);
+                    }
+
                     if (!$bed || $bed->getRoom() !== $room) {
                         return $this->json(['error' => "Bed is not found"], 400);
                     }
 
-                    if (!$bed->isAvailable()) {
-                        return $this->json(['error' => "Bed is not available"], 400);
-                    }
+                    $reservationPeriod = new BedReservationPeriod();
+                    $reservationPeriod->setBed($bed);
+                    $reservationPeriod->setStartDate($startDate);
+                    $reservationPeriod->setEndDate($endDate);
 
+                    $bed->addBedReservationPeriod($reservationPeriod);
+                    $manager->persist($reservationPeriod);
 
-                    $bed->occupy();
                     $room->deleteAvailableBeds();
                     $booking->addBed($bed);
 

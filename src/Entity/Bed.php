@@ -28,13 +28,22 @@ class Bed
     #[ORM\ManyToMany(targetEntity: Booking::class, mappedBy: 'beds')]
     private Collection $bookings;
 
+
+
+    /**
+     * @var Collection<int, BedReservationPeriod>
+     */
+    #[ORM\OneToMany(targetEntity: BedReservationPeriod::class, mappedBy: 'bed')]
+    private Collection $bedReservationPeriods;
+
     #[ORM\Column]
-    #[Groups(["roomsjson", "bedjson", "bookings"])]
-    private ?bool $isAvailable = null;
+    #[Groups("roomsjson")]
+    private ?bool $isCurrentlyOccupied = null;
 
     public function __construct()
     {
         $this->bookings = new ArrayCollection();
+        $this->bedReservationPeriods = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -82,27 +91,61 @@ class Bed
         return $this;
     }
 
-    public function isAvailable(): ?bool
+
+
+    /**
+     * @return Collection<int, BedReservationPeriod>
+     */
+    public function getBedReservationPeriods(): Collection
     {
-        return $this->isAvailable;
+        return $this->bedReservationPeriods;
     }
 
-    public function setAvailable(bool $isAvailable): static
+    public function addBedReservationPeriod(BedReservationPeriod $bedReservationPeriod): static
     {
-        $this->isAvailable = $isAvailable;
+        if (!$this->bedReservationPeriods->contains($bedReservationPeriod)) {
+            $this->bedReservationPeriods->add($bedReservationPeriod);
+            $bedReservationPeriod->setBed($this);
+        }
 
         return $this;
     }
 
-    public function occupy(): self
+    public function removeBedReservationPeriod(BedReservationPeriod $bedReservationPeriod): static
     {
-        $this->isAvailable = false;
+        if ($this->bedReservationPeriods->removeElement($bedReservationPeriod)) {
+            // set the owning side to null (unless already changed)
+            if ($bedReservationPeriod->getBed() === $this) {
+                $bedReservationPeriod->setBed(null);
+            }
+        }
+
         return $this;
     }
 
-    public function vacate(): self
+    public function isAvailableDuringPeriod(\DateTimeInterface $startDate, \DateTimeInterface $endDate): bool
     {
-        $this->isAvailable = true;
-        return $this;
+        foreach ($this->bedReservationPeriods as $period) {
+            if (
+                ($startDate < $period->getEndDate() && $endDate > $period->getStartDate())
+            ) {
+                return false;
+            }
+        }
+        return true;
     }
+
+    public function isCurrentlyOccupied(): bool
+    {
+        $now = new \DateTime();
+
+        foreach ($this->bedReservationPeriods as $reservationPeriod) {
+            if ($reservationPeriod->getStartDate() <= $now && $reservationPeriod->getEndDate() >= $now) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }

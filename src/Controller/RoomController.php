@@ -39,7 +39,6 @@ class RoomController extends AbstractController
         for ($i = 0; $i < $totalBeds; $i++) {
             $bed = new Bed();
             $bed->setRoom($room);
-            $bed->setAvailable(true);
             $manager->persist($bed);
         }
 
