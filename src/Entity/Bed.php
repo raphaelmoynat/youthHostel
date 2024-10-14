@@ -38,7 +38,7 @@ class Bed
 
     #[ORM\Column]
     #[Groups("roomsjson")]
-    private ?bool $isCurrentlyOccupied = null;
+    private ?bool $isCurrentlyOccupied = false;
 
     public function __construct()
     {

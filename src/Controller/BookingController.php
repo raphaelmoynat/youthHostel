@@ -89,12 +89,10 @@ class BookingController extends AbstractController
 
             }
 
-
             $manager->persist($booking);
             $manager->flush();
 
             return $this->json(['success' => true, 'message' => 'Booking confirmed']);
-
 
         }
 }

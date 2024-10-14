@@ -20,11 +20,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups("userjson")]
+    #[Groups(["userjson", 'event_list'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Groups("userjson")]
+    #[Groups(["userjson", 'event_list'])]
     private ?string $username = null;
 
     /**
@@ -41,11 +41,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     /**
+     * @var Collection<int, Event>
+     */
+    #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'participants')]
+    private Collection $events;
+
+    /**
      * @var Collection<int, Booking>
      */
 
     public function __construct()
     {
+        $this->events = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -121,6 +128,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, Event>
+     */
+    public function getEvents(): Collection
+    {
+        return $this->events;
+    }
+
+    public function addEvent(Event $event): static
+    {
+        if (!$this->events->contains($event)) {
+            $this->events->add($event);
+            $event->addParticipant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Event $event): static
+    {
+        if ($this->events->removeElement($event)) {
+            $event->removeParticipant($this);
+        }
+
+        return $this;
     }
 
 
