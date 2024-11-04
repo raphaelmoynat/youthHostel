@@ -40,6 +40,10 @@ class Bed
     #[Groups("roomsjson")]
     private ?bool $isCurrentlyOccupied = false;
 
+    #[ORM\Column]
+    #[Groups("roomsjson")]
+    private ?bool $isCleaned = true;
+
     public function __construct()
     {
         $this->bookings = new ArrayCollection();
@@ -146,6 +150,32 @@ class Bed
         }
 
         return false;
+    }
+
+    public function isCleaned(): ?bool
+    {
+        return $this->isCleaned;
+    }
+
+    public function setCleaned(bool $isCleaned): static
+    {
+        $this->isCleaned = $isCleaned;
+
+        return $this;
+    }
+
+    public function markAsClean(): static
+    {
+        $this->isCleaned = true;
+
+        return $this;
+    }
+
+    public function markAsNotClean(): static
+    {
+        $this->isCleaned = false;
+
+        return $this;
     }
 
 }

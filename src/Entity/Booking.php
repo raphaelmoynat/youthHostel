@@ -65,6 +65,12 @@ class Booking
     #[Groups("bookings")]
     private ?string $phoneNumber = null;
 
+    private $paymentIntentId;
+
+    #[ORM\Column(type: Types::ARRAY, nullable: true)]
+    private ?array $extras = null;
+
+
     public function __construct()
     {
         $this->rooms = new ArrayCollection();
@@ -217,6 +223,49 @@ class Booking
     public function setPhoneNumber(string $phoneNumber): static
     {
         $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    public function getPaymentIntentId(): ?string
+    {
+        return $this->paymentIntentId;
+    }
+
+    public function setPaymentIntentId(?string $paymentIntentId): self
+    {
+        $this->paymentIntentId = $paymentIntentId;
+
+        return $this;
+    }
+
+    public function calculateTotal(): float
+    {
+        $total = $this->totalAmount;
+
+        if (isset($this->extras['towels'])) {
+            $total += $this->extras['towels'] * 6;
+        }
+
+        if (isset($this->extras['luggage_service'])) {
+            $total += $this->extras['luggage_service'] * 3;
+        }
+
+        if (isset($this->extras['breakfast'])) {
+            $total += $this->extras['breakfast'] * 8;
+        }
+
+        return $total;
+    }
+
+    public function getExtras(): ?array
+    {
+        return $this->extras;
+    }
+
+    public function setExtras(?array $extras): static
+    {
+        $this->extras = $extras;
 
         return $this;
     }

@@ -18,7 +18,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class BedController extends AbstractController
 {
-    #[Route('/bed', name: 'app_bed')]
+    #[Route('/api/bed', name: 'app_bed')]
     public function index(): Response
     {
         return $this->render('bed/index.html.twig', [
@@ -54,5 +54,35 @@ class BedController extends AbstractController
         return $this->json($bed, 200, [], ['groups' => ['bedjson']]);
 
 
+    }
+
+    #[Route('/api/bed/clean/{id}', name: 'bed_clean', methods: ['PATCH'])]
+    public function markBedAsClean(int $id, BedRepository $bedRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $bed = $bedRepository->find($id);
+
+        if (!$bed) {
+            return new JsonResponse(['error' => 'Bed not found'], 404);
+        }
+
+        $bed->markAsClean();
+        $entityManager->flush();
+
+        return new JsonResponse(['message' => 'Bed is cleaned successfully']);
+    }
+
+    #[Route('/api/bed/not-clean/{id}', name: 'bed_not_clean', methods: ['PATCH'])]
+    public function markBedAsNotClean(int $id, BedRepository $bedRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $bed = $bedRepository->find($id);
+
+        if (!$bed) {
+            return new JsonResponse(['error' => 'Bed not found'], 404);
+        }
+
+        $bed->markAsNotClean();
+        $entityManager->flush();
+
+        return new JsonResponse(['message' => 'Bed marked as not clean successfully']);
     }
 }
