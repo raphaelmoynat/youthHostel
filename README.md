@@ -1,0 +1,1 @@
+This project involves creating an API using the Symfony framework for a youth hostel. It includes all the functions of a PMS (Property Management System), such as creating rooms or managing reservations, including payment with Stripe. 
