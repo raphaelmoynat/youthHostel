@@ -96,7 +96,7 @@ class BookingController extends AbstractController
         $totalAmountWithExtras = $booking->calculateTotal();
         $booking->setTotalAmount($totalAmountWithExtras);
 
-        Stripe::setApiKey('sk_test_51PCNM106IAn0kHEWABe5CqIL2llQqOwqFQZzgUlyKQGDngtaB34da87a8BuwZ2oTIalfIJ2riteobPqNuwS5emxi00VjWbKlWl'); // Remplace par ta clé secrète
+        Stripe::setApiKey('sk_test_51PCNM106IAn0kHEWABe5CqIL2llQqOwqFQZzgUlyKQGDngtaB34da87a8BuwZ2oTIalfIJ2riteobPqNuwS5emxi00VjWbKlWl');
 
         try {
             $paymentIntent = PaymentIntent::create([
