@@ -36,6 +36,8 @@ class BookingController extends AbstractController
     #[Route('/api/create/booking', name: 'create_booking')]
     public function create(Request $request,  BedRepository $bedRepository, RoomRepository $roomRepository, SerializerInterface $serializer, EntityManagerInterface $manager,): JsonResponse
     {
+
+
         $data = json_decode($request->getContent(), true);
         $startDate = new \DateTime($data['startDate']);
         $endDate = new \DateTime($data['endDate']);
@@ -97,6 +99,9 @@ class BookingController extends AbstractController
         $totalAmountWithExtras = $booking->calculateTotal();
         $booking->setTotalAmount($totalAmountWithExtras);
 
+        $manager->persist($booking);
+        $manager->flush();
+
         Stripe::setApiKey('sk_test_51PCNM106IAn0kHEWABe5CqIL2llQqOwqFQZzgUlyKQGDngtaB34da87a8BuwZ2oTIalfIJ2riteobPqNuwS5emxi00VjWbKlWl');
 
         try {
@@ -113,17 +118,18 @@ class BookingController extends AbstractController
                 ],
                 'description' => 'Booking for ' . $booking->getFirstName() . ' ' . $booking->getLastName(),
             ]);
+
         } catch (\Exception $e) {
             return $this->json(['error' => $e->getMessage()], 500);
         }
 
-        $manager->persist($booking);
-        $manager->flush();
+
 
         return $this->json([
             'success' => true,
             'message' => 'Booking created, waiting for payment',
             'paymentIntentId' => $paymentIntent->id,
+            'status' => $booking->getStatus(),
         ]);
     }
 
@@ -142,5 +148,9 @@ class BookingController extends AbstractController
 
         return $this->json(['success' => true, 'message' => 'Booking confirmed']);
     }
+
+
+
+
 
 }

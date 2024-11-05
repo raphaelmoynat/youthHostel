@@ -14,7 +14,7 @@ class Bed
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["roomsjson", "bedjson", "bookings"])]
+    #[Groups(["roomsjson", "bedjson", "bookings, "])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'beds', cascade: ['persist', 'remove'])]
@@ -41,7 +41,7 @@ class Bed
     private ?bool $isCurrentlyOccupied = false;
 
     #[ORM\Column]
-    #[Groups("roomsjson")]
+    #[Groups(["roomsjson", "bedjson"])]
     private ?bool $isCleaned = true;
 
     public function __construct()
@@ -177,5 +177,7 @@ class Bed
 
         return $this;
     }
+
+
 
 }

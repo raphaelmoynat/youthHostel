@@ -20,18 +20,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["userjson", 'event_list'])]
+    #[Groups(["userjson", 'event_list', "staff:detail"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Groups(["userjson", 'event_list'])]
+    #[Groups(["userjson", 'event_list', "staff:detail"])]
     private ?string $username = null;
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
-    #[Groups("userjson")]
+    #[Groups(["userjson", 'staff:detail'])]
     private array $roles = [];
 
     /**
@@ -102,6 +102,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function addRole(string $role): self
+    {
+        if (!in_array($role, $this->roles, true)) {
+            $this->roles[] = $role;
+        }
 
         return $this;
     }
