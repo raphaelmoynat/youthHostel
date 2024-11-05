@@ -9,6 +9,7 @@ use App\Repository\BedRepository;
 use App\Repository\BookingRepository;
 use App\Repository\RoomRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Stripe\Customer;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -103,6 +104,14 @@ class BookingController extends AbstractController
                 'amount' => $booking->getTotalAmount() * 100,
                 'currency' => 'eur',
                 'payment_method_types' => ['card'],
+                'metadata' => [
+                    'reservationId' => $booking->getId(),
+                    'firstName' => $booking->getFirstName(),
+                    'lastName' => $booking->getLastName(),
+                    'email' => $booking->getEmail(),
+                    'phoneNumber' => $booking->getPhoneNumber(),
+                ],
+                'description' => 'Booking for ' . $booking->getFirstName() . ' ' . $booking->getLastName(),
             ]);
         } catch (\Exception $e) {
             return $this->json(['error' => $e->getMessage()], 500);
@@ -114,7 +123,7 @@ class BookingController extends AbstractController
         return $this->json([
             'success' => true,
             'message' => 'Booking created, waiting for payment',
-            'clientSecret' => $paymentIntent->client_secret,
+            'paymentIntentId' => $paymentIntent->id,
         ]);
     }
 
