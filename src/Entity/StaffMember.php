@@ -28,6 +28,9 @@ class StaffMember
     #[Groups("staff:detail")]
     private ?string $description = null;
 
+    #[ORM\OneToOne(mappedBy: 'staffMember', cascade: ['persist', 'remove'])]
+    private ?User $member = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -65,6 +68,28 @@ class StaffMember
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getMember(): ?User
+    {
+        return $this->member;
+    }
+
+    public function setMember(?User $member): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($member === null && $this->member !== null) {
+            $this->member->setStaffMember(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($member !== null && $member->getStaffMember() !== $this) {
+            $member->setStaffMember($this);
+        }
+
+        $this->member = $member;
 
         return $this;
     }

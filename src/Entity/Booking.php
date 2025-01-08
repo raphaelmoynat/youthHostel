@@ -70,6 +70,9 @@ class Booking
     #[ORM\Column(type: Types::ARRAY, nullable: true)]
     private ?array $extras = null;
 
+    #[ORM\ManyToOne(inversedBy: 'bookings')]
+    private ?User $client = null;
+
 
     public function __construct()
     {
@@ -241,7 +244,7 @@ class Booking
 
     public function calculateTotal(): float
     {
-        $total = $this->totalAmount;
+        $total = $this->totalAmount  ?? 0;;
 
         if (isset($this->extras['towels'])) {
             $total += $this->extras['towels'] * 6;
@@ -251,8 +254,11 @@ class Booking
             $total += $this->extras['luggage_service'] * 3;
         }
 
-        if (isset($this->extras['breakfast'])) {
-            $total += $this->extras['breakfast'] * 8;
+        if (isset($this->extras['breakfast']) && $this->extras['breakfast'] === true) {
+            $numberOfBeds = count($this->getBeds());
+            $nights = $this->getStartDate()->diff($this->getEndDate())->days;
+
+            $total += $numberOfBeds * $nights * 6;
         }
 
         return $total;
@@ -266,6 +272,18 @@ class Booking
     public function setExtras(?array $extras): static
     {
         $this->extras = $extras;
+
+        return $this;
+    }
+
+    public function getClient(): ?User
+    {
+        return $this->client;
+    }
+
+    public function setClient(?User $client): static
+    {
+        $this->client = $client;
 
         return $this;
     }

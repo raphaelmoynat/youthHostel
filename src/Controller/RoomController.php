@@ -24,14 +24,21 @@ class RoomController extends AbstractController
         return $this->json($rooms, 200, [], ['groups' => 'roomsjson']);
     }
 
-    #[Route('/api/create/room', name: 'create_room', methods: ['POST'])]
+    #[Route('/api/staff/create/room', name: 'create_room', methods: ['POST'])]
     public function create(Request $request, RoomRepository $roomRepository, SerializerInterface $serializer, EntityManagerInterface $manager, Security $security): JsonResponse
     {
-        $room = $serializer->deserialize($request->getContent(), Room::class, 'json');
-        $author = $security->getUser();
-        if (!$author) {
-            throw new AccessDeniedException('You must be logged in to create a room.');
+        if (!$this->isGranted('ROLE_STAFF')) {
+            return $this->json(['error' => 'Permission denied'], 403);
         }
+
+        $data = json_decode($request->getContent(), true);
+        $room = $serializer->deserialize($request->getContent(), Room::class, 'json');
+
+        if (!isset($data['pricePerNight']) || !is_numeric($data['pricePerNight'])) {
+            return $this->json(['error' => 'Invalid or missing pricePerNight'], 400);
+        }
+
+        $pricePerNight = (float) $data['pricePerNight'];
 
         $totalBeds = $room->getTotalBeds();
         $room->setAvailableBeds($totalBeds);
@@ -39,6 +46,7 @@ class RoomController extends AbstractController
         for ($i = 0; $i < $totalBeds; $i++) {
             $bed = new Bed();
             $bed->setRoom($room);
+            $bed->setPricePerNight($pricePerNight);
             $manager->persist($bed);
         }
 
@@ -48,9 +56,13 @@ class RoomController extends AbstractController
         return $this->json(['message' => 'Room created successfully'], 200);
     }
 
-    #[Route('/api/delete/room/{id}', name: 'app_room_delete', methods: ['DELETE'])]
+    #[Route('/api/staff/delete/room/{id}', name: 'app_room_delete', methods: ['DELETE'])]
     public function delete(Request $request, Room $room, Security $security, EntityManagerInterface $manager): Response
     {
+        if (!$this->isGranted('ROLE_STAFF')) {
+            return $this->json(['error' => 'Permission denied'], 403);
+        }
+
         if (!$room) {
             return $this->json(['error' => 'Room not found'], 404);
         }
@@ -63,9 +75,13 @@ class RoomController extends AbstractController
 
     }
 
-    #[Route('/api/edit/room/{id}', name: 'edit_room', methods: ['PUT'])]
+    #[Route('/api/staff/edit/room/{id}', name: 'edit_room', methods: ['PUT'])]
     public function edit(Request $request, Room $room, RoomRepository $roomRepository, SerializerInterface $serializer, EntityManagerInterface $manager, Security $security): JsonResponse
     {
+        if (!$this->isGranted('ROLE_STAFF')) {
+            return $this->json(['error' => 'Permission denied'], 403);
+        }
+
         if (!$room) {
             return $this->json(['error' => 'Room not found'], 404);
         }

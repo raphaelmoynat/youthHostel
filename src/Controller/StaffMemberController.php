@@ -29,6 +29,40 @@ class StaffMemberController extends AbstractController
 
     }
 
+
+    #[Route('/api/admin/add-role', name: 'add_user_role', methods: ['POST'])]
+    public function addRoleByUsername(Request $request, UserRepository $userRepository, EntityManagerInterface $manager): JsonResponse
+    {
+
+        $data = json_decode($request->getContent(), true);
+        $username = $data['username'] ?? null;
+        $role = $data['role'] ?? null;
+
+        if (!$username || !$role) {
+            return $this->json(['error' => 'Username and role are required'], 400);
+        }
+
+        if (!in_array($role, ['ROLE_ADMIN', 'ROLE_STAFF'])) {
+            return $this->json(['error' => 'Invalid role.'], 400);
+        }
+
+        $user = $userRepository->findOneBy(['username' => $username]);
+
+        if (!$user) {
+            return $this->json(['error' => 'User not found.'], 404);
+        }
+
+        $roles = $user->getRoles();
+        if (!in_array($role, $roles)) {
+            $roles[] = $role;
+            $user->setRoles($roles);
+            $manager->flush();
+        }
+
+        return $this->json(['message' => "Role '$role' added  to user '$username'"], 200);
+    }
+
+
     #[Route('/api/staff/create', name: 'create_staff', methods: ['POST'])]
     public function create(Request $request, StaffMemberRepository $staffMemberRepository, SerializerInterface $serializer, EntityManagerInterface $manager, Security $security): JsonResponse
     {
@@ -103,45 +137,90 @@ class StaffMemberController extends AbstractController
 
 
     #[Route('/api/staff/update-role/{id}', name: 'update_staff_role', methods: ['PUT'])]
-    public function updateRole(int $id, Request $request, UserRepository $userRepository, Security $security, EntityManagerInterface $manager): JsonResponse {
+    public function updateRole(int $id, Request $request, UserRepository $userRepository, Security $security, EntityManagerInterface $manager): JsonResponse
+    {
         if (!$this->isGranted('ROLE_ADMIN')) {
             return $this->json(['error' => 'Permission denied'], 403);
         }
 
+        $currentUser = $security->getUser();
+        if ($currentUser && $currentUser->getId() === $id) {
+            return $this->json(['error' => 'You cannot edit your own role'], 403);
+        }
+
         $user = $userRepository->find($id);
         if (!$user) {
-            return $this->json(['error' => 'User not exist'], 404);
+            return $this->json(['error' => 'User not found'], 404);
         }
 
         $data = json_decode($request->getContent(), true);
-        if (!isset($data['role']) || !isset($data['action'])) {
-            return $this->json(['error' => 'missing data'], 400);
+        $role = $data['role'] ?? null;
+
+        if (!$role) {
+            return $this->json(['error' => 'Missing role'], 400);
         }
 
-        $role = $data['role'];
-        $action = $data['action'];
+        $user->setRoles([$role]);
 
-        if ($action === 'add') {
-            if (!in_array($role, $user->getRoles(), true)) {
-                $user->addRole($role);
-            } else {
-                return $this->json(['message' => 'role already exist'], 200);
-            }
-        } elseif ($action === 'remove') {
-            $roles = $user->getRoles();
-            if (in_array($role, $roles, true)) {
-                $roles = array_diff($roles, [$role]);
-                $user->setRoles(array_values($roles));
-            } else {
-                return $this->json(['message' => 'role does not exist.'], 200);
-            }
-        } else {
-            return $this->json(['error' => 'invalid action'], 400);
-        }
         $manager->persist($user);
         $manager->flush();
 
-        return $this->json($user, 200, [], ['groups' => 'staff:detail']);
+        return $this->json([
+            'message' => 'Role updated successfully',
+            'roles' => $user->getRoles()
+        ], 200);
+    }
+
+
+
+    #[Route('/api/admin/users', name: 'get_all_users', methods: ['GET'])]
+    public function getAllUsers(UserRepository $userRepository, Security $security): JsonResponse
+    {
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            return $this->json(['error' => 'Access denied. Only administrators can access this route.'], 403);
+        }
+
+        $users = $userRepository->findAll();
+
+        return $this->json($users, 200, [], ['groups' => 'userjson']);
+    }
+
+
+    #[Route('api/staff/edit', name: 'edit', methods: ['PUT'])]
+    public function editStaffProfile(Request $request, EntityManagerInterface $manager, Security $security): JsonResponse
+    {
+        if (!$this->isGranted('ROLE_STAFF')) {
+            return $this->json(['error' => 'Permission denied'], 403);
+        }
+
+        $user = $security->getUser();
+
+        if (!$user) {
+            return $this->json(['error' => 'User not authenticated'], 401);
+        }
+
+        $staffMember = $user->getStaffMember() ?? new StaffMember();
+        $data = json_decode($request->getContent(), true);
+
+        $staffMember->setFirstName($data['firstName'] ?? $staffMember->getFirstName());
+        $staffMember->setLastName($data['lastName'] ?? $staffMember->getLastName());
+        $staffMember->setDescription($data['description'] ?? $staffMember->getDescription());
+        $staffMember->setMember($user);
+        $manager->persist($staffMember);
+        $manager->flush();
+
+        return $this->json([
+            'message' => 'Staff profile updated successfully',
+            'staff' => $staffMember,
+        ], 200, [], ['groups' => 'staff:detail']);
+    }
+
+    #[Route('api/list/staff', name: 'list', methods: ['GET'])]
+    public function listStaffMembers(StaffMemberRepository $repository): JsonResponse
+    {
+        $staffMembers = $repository->findAll();
+
+        return $this->json($staffMembers, 200, [], ['groups' => 'staff:detail']);
     }
 
 

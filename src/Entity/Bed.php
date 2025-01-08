@@ -36,6 +36,9 @@ class Bed
     #[ORM\OneToMany(targetEntity: BedReservationPeriod::class, mappedBy: 'bed')]
     private Collection $bedReservationPeriods;
 
+
+
+
     #[ORM\Column]
     #[Groups("roomsjson")]
     private ?bool $isCurrentlyOccupied = false;
@@ -43,6 +46,12 @@ class Bed
     #[ORM\Column]
     #[Groups(["roomsjson", "bedjson"])]
     private ?bool $isCleaned = true;
+
+
+    #[ORM\Column(type: 'float')]
+    #[Groups(["bedjson", "roomsjson"])]
+    private ?float $pricePerNight = null;
+
 
     public function __construct()
     {
@@ -175,6 +184,17 @@ class Bed
     {
         $this->isCleaned = false;
 
+        return $this;
+    }
+
+    public function getPricePerNight(): ?float
+    {
+        return $this->pricePerNight;
+    }
+
+    public function setPricePerNight(float $pricePerNight): self
+    {
+        $this->pricePerNight = $pricePerNight;
         return $this;
     }
 
