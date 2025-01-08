@@ -30,39 +30,6 @@ class StaffMemberController extends AbstractController
     }
 
 
-    #[Route('/api/admin/add-role', name: 'add_user_role', methods: ['POST'])]
-    public function addRoleByUsername(Request $request, UserRepository $userRepository, EntityManagerInterface $manager): JsonResponse
-    {
-
-        $data = json_decode($request->getContent(), true);
-        $username = $data['username'] ?? null;
-        $role = $data['role'] ?? null;
-
-        if (!$username || !$role) {
-            return $this->json(['error' => 'Username and role are required'], 400);
-        }
-
-        if (!in_array($role, ['ROLE_ADMIN', 'ROLE_STAFF'])) {
-            return $this->json(['error' => 'Invalid role.'], 400);
-        }
-
-        $user = $userRepository->findOneBy(['username' => $username]);
-
-        if (!$user) {
-            return $this->json(['error' => 'User not found.'], 404);
-        }
-
-        $roles = $user->getRoles();
-        if (!in_array($role, $roles)) {
-            $roles[] = $role;
-            $user->setRoles($roles);
-            $manager->flush();
-        }
-
-        return $this->json(['message' => "Role '$role' added  to user '$username'"], 200);
-    }
-
-
     #[Route('/api/staff/create', name: 'create_staff', methods: ['POST'])]
     public function create(Request $request, StaffMemberRepository $staffMemberRepository, SerializerInterface $serializer, EntityManagerInterface $manager, Security $security): JsonResponse
     {
@@ -78,65 +45,7 @@ class StaffMemberController extends AbstractController
         return $this->json(['message' => 'StaffMember created successfully'], 200);
     }
 
-    #[Route('/api/delete/staff/{id}', name: 'app_staff_delete', methods: ['DELETE'])]
-    public function delete(Request $request, StaffMember $staffMember, Security $security, EntityManagerInterface $manager): Response
-    {
-        if (!$staffMember) {
-            return $this->json(['error' => 'Staff member not found'], 404);
-        }
-
-        $manager->remove($staffMember);
-        $manager->flush();
-
-
-        return $this->json(['message' => 'Staff Member deleted successfully'], 200);
-
-    }
-
-    #[Route('/api/edit/staff/{id}', name: 'edit_staff', methods: ['PUT'])]
-    public function edit(Request $request, StaffMember $staffMember, EventRepository $eventRepository, SerializerInterface $serializer, EntityManagerInterface $manager, Security $security): JsonResponse
-    {
-        if (!$staffMember) {
-            return $this->json(['error' => 'Staff member not found'], 404);
-        }
-
-
-        $serializer->deserialize($request->getContent(), StaffMember::class, 'json', ['object_to_populate' => $staffMember]);
-
-        $manager->flush();
-
-        return $this->json($staffMember, 200, [], ['groups' => ['staff:detail']]);
-
-    }
-
-    #[Route('/api/change-bed-status/{bedId}', name: 'change_bed_status', methods: ['PUT'])]
-    public function changeBedStatus(int $bedId, Request $request, BedRepository $bedRepository, Security $security, EntityManagerInterface $manager): JsonResponse
-    {
-
-        if (!$this->isGranted('ROLE_CLEANER')) {
-            throw new AccessDeniedException('You must be login');
-        }
-
-        $bed = $bedRepository->find($bedId);
-        if (!$bed) {
-            return $this->json(['error' =>'bed not exist'], 404);
-        }
-
-        $data = json_decode($request->getContent(), true);
-        if (!isset($data['isCleaned'])) {
-            return $this->json(['error' => 'missing data'], 400);
-        }
-
-        $status = (bool)$data['isCleaned'];
-
-        $bed->setCleaned($status);
-        $manager->flush();
-
-        return $this->json($bed, 200, [], ['groups' => 'bedjson']);
-    }
-
-
-    #[Route('/api/staff/update-role/{id}', name: 'update_staff_role', methods: ['PUT'])]
+    #[Route('/api/admin/update-role/{id}', name: 'update_staff_role', methods: ['PUT'])]
     public function updateRole(int $id, Request $request, UserRepository $userRepository, Security $security, EntityManagerInterface $manager): JsonResponse
     {
         if (!$this->isGranted('ROLE_ADMIN')) {

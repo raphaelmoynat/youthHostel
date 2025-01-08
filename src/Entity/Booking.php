@@ -15,62 +15,64 @@ class Booking
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups("bookings")]
+    #[Groups("booking:read")]
     private ?int $id = null;
 
     /**
      * @var Collection<int, Room>
      */
     #[ORM\ManyToMany(targetEntity: Room::class, inversedBy: 'bookings', cascade: ['persist'])]
-    #[Groups("bookings")]
+    #[Groups("booking:read")]
     private Collection $rooms;
 
     /**
      * @var Collection<int, Bed>
      */
     #[ORM\ManyToMany(targetEntity: Bed::class, inversedBy: 'bookings', cascade: ['persist'])]
-    #[Groups("bookings")]
+    #[Groups("booking:read")]
     private Collection $beds;
 
 
     #[ORM\Column]
-    #[Groups("bookings")]
+    #[Groups("booking:read")]
     private ?float $totalAmount = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups("bookings")]
+    #[Groups("booking:read")]
     private ?string $status = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups("bookings")]
+    #[Groups("booking:read")]
     private ?\DateTimeInterface $startDate = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups("bookings")]
+    #[Groups("booking:read")]
     private ?\DateTimeInterface $endDate = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups("bookings")]
+    #[Groups("booking:read")]
     private ?string $firstName = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups("bookings")]
+    #[Groups("booking:read")]
     private ?string $lastName = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups("bookings")]
+    #[Groups("booking:read")]
     private ?string $email = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups("bookings")]
+    #[Groups("booking:read")]
     private ?string $phoneNumber = null;
 
     private $paymentIntentId;
 
     #[ORM\Column(type: Types::ARRAY, nullable: true)]
+    #[Groups("booking:read")]
     private ?array $extras = null;
 
     #[ORM\ManyToOne(inversedBy: 'bookings')]
+    #[Groups("booking:read")]
     private ?User $client = null;
 
 

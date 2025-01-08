@@ -21,7 +21,7 @@ class RoomController extends AbstractController
     public function index(RoomRepository $roomRepository): Response
     {
         $rooms = $roomRepository->findAll();
-        return $this->json($rooms, 200, [], ['groups' => 'roomsjson']);
+        return $this->json($rooms, 200, [], ['groups' => 'room:read']);
     }
 
     #[Route('/api/staff/create/room', name: 'create_room', methods: ['POST'])]
@@ -86,12 +86,16 @@ class RoomController extends AbstractController
             return $this->json(['error' => 'Room not found'], 404);
         }
 
+        $data = json_decode($request->getContent(), true);
 
-        $serializer->deserialize($request->getContent(), Room::class, 'json', ['object_to_populate' => $room]);
+        if (!isset($data['name'])) {
+            return $this->json(['error' => 'Name is required'], 400);
+        }
+        $room->setName($data['name']);
 
         $manager->flush();
 
-        return $this->json($room, 200, [], ['groups' => ['roomsjson']]);
+        return $this->json($room, 200, [], ['groups' => ['room:read']]);
 
     }
 

@@ -22,7 +22,7 @@ class EventController extends AbstractController
     public function index(EventRepository $eventRepository): Response
     {
         $events = $eventRepository->findAll();
-        return $this->json($events, 200, [], ['groups' => 'event_list']);
+        return $this->json($events, 200, [], ['groups' => 'event:read']);
     }
 
     #[Route('/api/staff/create/event', name: 'create_event', methods: ['POST'])]
@@ -75,7 +75,7 @@ class EventController extends AbstractController
 
         $manager->flush();
 
-        return $this->json($event, 200, [], ['groups' => ['eventroomsjsons']]);
+        return $this->json($event, 200, [], ['groups' => ['event:read']]);
 
     }
 
@@ -105,7 +105,7 @@ class EventController extends AbstractController
         return $this->json(['message' => 'Successfully registered to the event!', 'availablePlaces' => $event->getAvailablePlaces()], Response::HTTP_OK);
     }
 
-    #[Route('/api/staff/event/cancel/{id}', name: 'cancel_event_registration', methods: ['DELETE'])]
+    #[Route('/api/event/cancel/{id}', name: 'cancel_event_registration', methods: ['DELETE'])]
     public function cancelRegistration($id, EventRepository $eventRepository, EntityManagerInterface $manager, Security $security): JsonResponse
     {
         $user = $security->getUser();

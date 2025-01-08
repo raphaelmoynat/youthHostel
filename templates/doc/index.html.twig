@@ -63,4 +63,746 @@
         </div>
     </div>
 
-{% endblock %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Create a Bed</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>POST /api/staff/create/bed</code></p>
+            <p><strong>Description:</strong> Create a new bed</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (ROLE_STAFF required)</p>
+            <h6>Request Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "room": 1,
+                "pricePerNight": 45.5
+            }
+        </pre>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "id": 1,
+                "room": {
+                    "id": 1,
+                    "name": "Room A"
+                    "totalBeds": 3
+                },
+                "pricePerNight": 45.5,
+                "isCleaned": true
+            }
+        </pre>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Get All Beds</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>GET /api/beds</code></p>
+            <p><strong>Description:</strong> Retrieve all beds</p>
+            <p><strong>Authorization:</strong> None</p>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            [
+                {
+                    "id": 1,
+                    "room": {
+                        "id": 1,
+                        "name": "Room A"
+                    },
+                    "pricePerNight": 45.5,
+                    "isCleaned": true
+                },
+                {
+                    "id": 2,
+                    "room": {
+                        "id": 2,
+                        "name": "Room B"
+                    },
+                    "pricePerNight": 50.0,
+                    "isCleaned": false
+                }
+            ]
+        </pre>
+        </div>
+    </div>
+
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Mark Bed as Clean</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>PATCH /api/staff/bed/clean/{id}</code></p>
+            <p><strong>Description:</strong> Mark a bed as clean</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (ROLE_STAFF required)</p>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "message": "Bed is cleaned successfully"
+            }
+        </pre>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Mark Bed as Not Clean</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>PATCH /api/staff/bed/not-clean/{id}</code></p>
+            <p><strong>Description:</strong> Mark a bed as not clean</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (ROLE_STAFF required)</p>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "message": "Bed marked as not clean successfully"
+            }
+        </pre>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Delete a Bed</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>DELETE /api/staff/bed/delete/{id}</code></p>
+            <p><strong>Description:</strong> Delete a bed by its ID</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (ROLE_STAFF required)</p>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "message": "Bed deleted successfully"
+            }
+        </pre>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Get All Rooms</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>GET /api/rooms</code></p>
+            <p><strong>Description:</strong> Retrieve all rooms</p>
+            <p><strong>Authorization:</strong> Bearer &lt;token&gt;</p>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            [
+                {
+                    "id": 1,
+                    "name": "Room A",
+                    "totalBeds": 4,
+                    "availableBeds": 4,
+                    "beds": [
+                        {
+                            "id": 101,
+                            "pricePerNight": 45.5,
+                            "isCleaned": true
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "Room B",
+                    "totalBeds": 3,
+                    "availableBeds": 2,
+                    "beds": [
+                        {
+                            "id": 201,
+                            "pricePerNight": 50.0,
+                            "isCleaned": false
+                        }
+                    ]
+                }
+            ]
+        </pre>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Create a Room</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>POST /api/staff/create/room</code></p>
+            <p><strong>Description:</strong> Create a new room and its associated beds</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (ROLE_STAFF required)</p>
+            <h6>Request Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "name": "Room A",
+                "totalBeds": 4,
+                "pricePerNight": 45.5
+            }
+        </pre>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "message": "Room created successfully"
+            }
+        </pre>
+        </div>
+    </div>
+
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Edit a Room</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>PUT /api/staff/edit/room/{id}</code></p>
+            <p><strong>Description:</strong> Update a room's name</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (ROLE_STAFF required)</p>
+            <h6>Request Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "name": "Room A Updated",
+            }
+        </pre>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "id": 1,
+                "name": "Room A Updated",
+                "totalBeds": 5,
+                "availableBeds": 3,
+                "beds": [
+                    {
+                        "id": 101,
+                        "pricePerNight": 45.5,
+                        "isCleaned": true
+                    }
+                ]
+            }
+        </pre>
+        </div>
+    </div>
+
+
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Delete a Room</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>DELETE /api/staff/delete/room/{id}</code></p>
+            <p><strong>Description:</strong> Delete a room by its ID</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (ROLE_STAFF required)</p>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "message": "Room deleted successfully"
+            }
+        </pre>
+        </div>
+    </div>
+
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Get All Events</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>GET /api/events</code></p>
+            <p><strong>Description:</strong> Retrieve all events</p>
+            <p><strong>Authorization:</strong> None</p>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            [
+                {
+                    "id": 1,
+                    "name": "Event A",
+                    "description": "Description of Event A",
+                    "date": "2025-01-10T15:00:00",
+                    "maxParticipants": 20,
+                    "location": "patio de l'auberge",
+                    "availablePlaces": 5,
+                    "participants": [
+                        {
+                            "id": 1,
+                            "username": "user1"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "Event B",
+                    "description": "Description of Event B",
+                    "date": "2025-01-15T18:00:00",
+                    "maxParticipants": 30,
+                    "location": "salle de jeux de l'auberge",
+                    "availablePlaces": 10,
+                    "participants": []
+                }
+            ]
+        </pre>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Create an Event</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>POST /api/staff/create/event</code></p>
+            <p><strong>Description:</strong> Create a new event</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (ROLE_STAFF required)</p>
+            <h6>Request Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "name": "Event A",
+                "description": "Description of Event A",
+                "date": "2025-01-10T15:00:00",
+                "maxParticipants": 20,
+                "location": "patio"
+            }
+        </pre>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "message": "Event created successfully"
+            }
+        </pre>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Edit an Event</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>PUT /api/staff/edit/event/{id}</code></p>
+            <p><strong>Description:</strong> Update an event's details</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (ROLE_STAFF required)</p>
+            <h6>Request Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "name": "Event A Updated",
+                "description": "Updated description of Event A",
+                "date": "2025-01-12T10:00:00",
+                "maxParticipants": 25,
+                "location": "salon"
+            }
+        </pre>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "id": 1,
+                "name": "Event A Updated",
+                "description": "Updated description of Event A",
+                "date": "2025-01-12T10:00:00",
+                "maxParticipants": 25,
+                "location": "salon",
+                "availablePlaces": 10,
+                "participants": []
+            }
+        </pre>
+        </div>
+    </div>
+
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Delete an Event</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>DELETE /api/staff/delete/event/{id}</code></p>
+            <p><strong>Description:</strong> Delete an event by its ID</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (ROLE_STAFF required)</p>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "message": "Event deleted successfully"
+            }
+        </pre>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Register for an Event</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>POST /api/event/register/{id}</code></p>
+            <p><strong>Description:</strong> Register the authenticated user for the specified event</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code></p>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "message": "Successfully registered to the event!",
+                "availablePlaces": 4
+            }
+        </pre>
+        </div>
+    </div>
+
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Cancel Registration for an Event</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>DELETE /api/event/cancel/{id}</code></p>
+            <p><strong>Description:</strong> Cancel the authenticated user's registration for the specified event</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code></p>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "message": "Your registration has been successfully canceled.",
+                "availablePlaces": 5
+            }
+        </pre>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Get All Bookings</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>GET /api/staff/bookings</code></p>
+            <p><strong>Description:</strong> Retrieve all bookings (only for staff)</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (ROLE_STAFF required)</p>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            [
+                {
+                    "id": 1,
+                    "rooms": [
+                        {
+                            "id": 1,
+                            "name": "Room A"
+                        }
+                    ],
+                    "beds": [
+                        {
+                            "id": 101,
+                            "pricePerNight": 45.5
+                        }
+                    ],
+                    "totalAmount": 300.5,
+                    "status": "confirmed",
+                    "startDate": "2025-01-10T15:00:00",
+                    "endDate": "2025-01-15T10:00:00",
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "email": "johndoe@example.com",
+                    "phoneNumber": "+123456789"
+                }
+            ]
+        </pre>
+        </div>
+    </div>
+
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Create a Booking</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>POST /api/create/booking</code></p>
+            <p><strong>Description:</strong> Create a new booking for a client</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (Authenticated user required)</p>
+            <h6>Request Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "startDate": "2025-01-10",
+                "endDate": "2025-01-15",
+                "email": "raph@mail.com",
+                "firstName": "Raph",
+                "lastName": "Moynat",
+                "phoneNumber": "+123456789",
+                "rooms": [
+                    {
+                        "id": 1,
+                        "beds": [
+                            {"id": 101},
+                            {"id": 102}
+                        ]
+                    }
+                ],
+                "extras": {
+                    "towels": 2,
+                    "luggage_service": 1,
+                    "breakfast": true
+                }
+            }
+        </pre>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "success": true,
+                "message": "Booking created, waiting for payment",
+                "paymentIntentId": "pi_123456789",
+                "status": "waiting payment",
+                "totalAmount": 350.0
+            }
+        </pre>
+        </div>
+    </div>
+
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Make a paiement with stripe to confirm the booking</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>POST https://api.stripe.com/v1/payment_intents/paymentIntentId/confirm</code></p>
+            <p><strong>Description:</strong> Make a paiement to confirm a booking. After the paiement succeeded with stripe, the admin or staff member can confirm the booking manually. I can see all the test transactions on my stripe's dashboard</p>
+            <p><strong>Authorization:</strong> <code>Bearer sk_test_51PCNM106IAn0kHEWABe5CqIL2llQqOwqFQZzgUlyKQGDngtaB34da87a8BuwZ2oTIalfIJ2riteobPqNuwS5emxi00VjWbKlWl</code></p>
+            <h6>Request Example:</h6>
+            <pre class="bg-light p-3">
+            Key: payment_method
+            Value: pm_card_visa
+            Content-Type: application/x-www-form-urlencoded
+            </pre>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "id": "pi_3Qf67006IAn0kHEW1v62s7Eu",
+                "object": "payment_intent",
+                "amount": 7600,
+                "amount_capturable": 0,
+                "amount_details": {
+                    "tip": {}
+                },
+                "amount_received": 7600,
+                "application": null,
+                "application_fee_amount": null,
+                "automatic_payment_methods": null,
+                "canceled_at": null,
+                "cancellation_reason": null,
+                "capture_method": "automatic_async",
+                "client_secret": "pi_3Qf67006IAn0kHEW1v62s7Eu_secret_ZTl7DosvanSPoK8rUYxiht1tZ",
+                "confirmation_method": "automatic",
+                "created": 1736369062,
+                "currency": "eur",
+                "customer": null,
+                "description": "Booking for John Doe",
+                "invoice": null,
+                "last_payment_error": null,
+                "latest_charge": "ch_3Qf67006IAn0kHEW1w8pWdRH",
+                "livemode": false,
+                "metadata": {
+                    "email": "john.doe@example.com",
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "phoneNumber": "1234567890",
+                    "reservationId": "79"
+                },
+                "next_action": null,
+                "on_behalf_of": null,
+                "payment_method": "pm_1Qf67h06IAn0kHEWH4G9hOu1",
+                "payment_method_configuration_details": null,
+                "payment_method_options": {
+                    "card": {
+                        "installments": null,
+                        "mandate_options": null,
+                        "network": null,
+                        "request_three_d_secure": "automatic"
+                    }
+                },
+                "payment_method_types": [
+                    "card"
+                ],
+                "processing": null,
+                "receipt_email": null,
+                "review": null,
+                "setup_future_usage": null,
+                "shipping": null,
+                "source": null,
+                "statement_descriptor": null,
+                "statement_descriptor_suffix": null,
+                <strong>"status": "succeeded",</strong>
+                "transfer_data": null,
+                "transfer_group": null
+            }
+        </pre>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Confirm a Booking</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>POST /api/staff/confirm/booking/{id}</code></p>
+            <p><strong>Description:</strong> Confirm a booking by its ID after receiving payment on stripe</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (ROLE_STAFF or ROLE_ADMIN required)</p>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "success": true,
+                "message": "Booking confirmed"
+            }
+        </pre>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Cancel a Booking</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>DELETE /api/staff/cancel/booking/{id}</code></p>
+            <p><strong>Description:</strong> Cancel a booking and release its reserved beds</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (ROLE_STAFF or ROLE_ADMIN required)</p>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "success": true,
+                "message": "Booking cancelled and beds are available"
+            }
+        </pre>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Get My Bookings</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>GET /api/my-bookings</code></p>
+            <p><strong>Description:</strong> Retrieve all bookings made by the authenticated user</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (Authenticated user required)</p>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            [
+                {
+                    "id": 1,
+                    "rooms": [
+                        {
+                            "id": 1,
+                            "name": "Room A"
+                        }
+                    ],
+                    "beds": [
+                        {
+                            "id": 101,
+                            "pricePerNight": 45.5
+                        }
+                    ],
+                    "totalAmount": 300.5,
+                    "status": "confirmed",
+                    "startDate": "2025-01-10T15:00:00",
+                    "endDate": "2025-01-15T10:00:00",
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "email": "johndoe@example.com",
+                    "phoneNumber": "+123456789"
+                    "extras": {
+                            "breakfast": true,
+                            "towels": 2
+                    },
+                    "client": {
+                            "id": 8,
+                            "username": "raphael"
+                    }
+                }
+            ]
+        </pre>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Get All Staff Members</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>GET /api/staff</code></p>
+            <p><strong>Description:</strong> Retrieve all staff members</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (Authenticated user required)</p>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            [
+                {
+                    "id": 1,
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "description": "Senior Staff Member"
+                },
+                {
+                    "id": 2,
+                    "firstName": "Jane",
+                    "lastName": "Smith",
+                    "description": "Junior Staff Member"
+                }
+            ]
+        </pre>
+        </div>
+    </div>
+
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Change a user role</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>PUT /api/admin/update-role/{userId}</code></p>
+            <p><strong>Description:</strong> Change a user role (admin only)</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (ROLE_ADMIN required)</p>
+            <h6>Request Example:</h6>
+            <pre class="bg-light p-3">
+           {
+                "role":"ROLE_STAFF"
+            }
+
+        </pre>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            {
+                "message": "Role updated successfully",
+                "roles": [
+                    "ROLE_STAFF",
+                    "ROLE_USER"
+                ]
+            }
+        </pre>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Get All Users</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>URL:</strong> <code>GET /api/admin/users</code></p>
+            <p><strong>Description:</strong> Retrieve all users (admin only)</p>
+            <p><strong>Authorization:</strong> <code>Bearer &lt;token&gt;</code> (ROLE_ADMIN required)</p>
+            <h6>Response Example:</h6>
+            <pre class="bg-light p-3">
+            [
+                {
+                    "id": 1,
+                    "username": "admin",
+                    "roles": ["ROLE_ADMIN"]
+                },
+                {
+                    "id": 2,
+                    "username": "johndoe",
+                    "roles": ["ROLE_STAFF"]
+                }
+            ]
+        </pre>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {% endblock %}

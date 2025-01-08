@@ -15,18 +15,18 @@ class Room
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["roomsjson", "bedjson", "bookings"])]
+    #[Groups(["room:read", "bed:read", "booking:read"])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(["roomsjson", "bedjson"])]
+    #[Groups(["room:read", "bed:read", "booking:read"])]
     private ?string $name = null;
 
     /**
      * @var Collection<int, Bed>
      */
     #[ORM\OneToMany(targetEntity: Bed::class, mappedBy: 'room', cascade: ['persist', 'remove'])]
-    #[Groups("roomsjson")]
+    #[Groups("room:read")]
     private Collection $beds;
 
     /**
@@ -36,6 +36,7 @@ class Room
     private Collection $bookings;
 
     #[ORM\Column]
+    #[Groups(["room:read"])]
     private ?int $totalBeds = null;
 
     #[ORM\Column]

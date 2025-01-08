@@ -15,34 +15,34 @@ class Event
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['event_list'])]
+    #[Groups(['event:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['event_list'])]
+    #[Groups(['event:read'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['event_list'])]
+    #[Groups(['event:read'])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['event_list'])]
+    #[Groups(['event:read'])]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column]
-    #[Groups(['event_list'])]
+    #[Groups(['event:read'])]
     private ?int $maxParticipants = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['event_list'])]
+    #[Groups(['event:read'])]
     private ?string $location = null;
 
     /**
      * @var Collection<int, User>
      */
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'events')]
-    #[Groups(['event_list'])]
+    #[Groups(['event:read'])]
     private Collection $participants;
 
 
@@ -140,7 +140,7 @@ class Event
         return $this;
     }
 
-    #[Groups(['event_list'])]
+    #[Groups(['event:read'])]
     public function getAvailablePlaces(): int
     {
         return $this->getMaxParticipants() - count($this->getParticipants());

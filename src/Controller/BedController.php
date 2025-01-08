@@ -56,8 +56,7 @@ class BedController extends AbstractController
         $manager->persist($bed);
         $manager->flush();
 
-        return $this->json($bed, 200, [], ['groups' => ['bedjson']]);
-
+        return $this->json($bed, 200, [], ['groups' => ['bed:read']]);
 
     }
 
@@ -65,7 +64,7 @@ class BedController extends AbstractController
     public function getAllBeds(BedRepository $bedRepository, SerializerInterface $serializer): JsonResponse
     {
         $beds = $bedRepository->findAll();
-        return $this->json($beds, 200, [], ['groups' => 'bedjson']);
+        return $this->json($beds, 200, [], ['groups' => 'bed:read']);
     }
 
     #[Route('/api/staff/bed/clean/{id}', name: 'bed_clean', methods: ['PATCH'])]
@@ -119,6 +118,9 @@ class BedController extends AbstractController
         if (!$bed) {
             return new JsonResponse(['error' => 'Bed not found'], 404);
         }
+
+
+
         $entityManager->remove($bed);
         $entityManager->flush();
 

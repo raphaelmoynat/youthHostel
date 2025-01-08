@@ -14,11 +14,11 @@ class Bed
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["roomsjson", "bedjson", "bookings, "])]
+    #[Groups(["room:read", "bed:read", "booking:read"])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'beds', cascade: ['persist', 'remove'])]
-    #[Groups(["bedjson"])]
+    #[Groups(["bed:read"])]
     private ?Room $room = null;
 
 
@@ -33,23 +33,23 @@ class Bed
     /**
      * @var Collection<int, BedReservationPeriod>
      */
-    #[ORM\OneToMany(targetEntity: BedReservationPeriod::class, mappedBy: 'bed')]
+    #[ORM\OneToMany(targetEntity: BedReservationPeriod::class, mappedBy: 'bed',cascade: ['remove'], orphanRemoval: true)]
     private Collection $bedReservationPeriods;
 
 
 
 
     #[ORM\Column]
-    #[Groups("roomsjson")]
+    #[Groups(["bed:read", "room:read"])]
     private ?bool $isCurrentlyOccupied = false;
 
     #[ORM\Column]
-    #[Groups(["roomsjson", "bedjson"])]
+    #[Groups(["room:read", "bed:read"])]
     private ?bool $isCleaned = true;
 
 
     #[ORM\Column(type: 'float')]
-    #[Groups(["bedjson", "roomsjson"])]
+    #[Groups(["bed:read", "room:read"])]
     private ?float $pricePerNight = null;
 
 

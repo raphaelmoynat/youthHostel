@@ -31,7 +31,7 @@ class BookingController extends AbstractController
         }
 
         $bookings = $bookingRepository->findAll();
-        return $this->json($bookings, 200, [], ['groups' => 'bookings']);
+        return $this->json($bookings, 200, [], ['groups' => 'booking:read']);
     }
 
 
@@ -217,7 +217,7 @@ class BookingController extends AbstractController
 
         $bookings = $bookingRepository->findBy(['client' => $user]);
 
-        return $this->json($bookings, 200, [], ['groups' => 'bookings']);
+        return $this->json($bookings, 200, [], ['groups' => 'booking:read']);
     }
 
 
